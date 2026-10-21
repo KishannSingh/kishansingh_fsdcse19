@@ -1,36 +1,47 @@
-import React, { useState, useEffect } from 'react'
-import Header from './Components/Header'
-import Product from './Components/Product'
-import Footer from './Components/Footer'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from './Components/Home';
-import About from './Components/About';
-import Cart from './Components/Cart';
+import React, { useState } from 'react'
 
 const App = () => {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    fetch("https://dummyjson.com/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data.products));
-  }, []);
-
-  console.log(products);
-
+  const[task,setTask]=useState("");
+  const [todoList, setTodoList] = useState([]);
+  const [editIndex,setEditIndex]=useState(null);
+  const addHandler=()=>{
+    if(task==="")alert("Please add some task");
+    else{
+      if(editIndex!==null){
+        const updatedList =[...todoList];
+        updatedList[editIndex] = task;
+        setTodoList([...updatedList]);
+        setEditIndex(null);
+      }
+    }
+    setTodoList([...todoList,task]);
+    console.log(todoList);
+    console.log(task);
+    setTask("");
+  }
+  const deleteHandler=(index)=>{
+  console.log(todoList[index]);
+  const updatedList=todoList.filter((d,i)=>i!==index);
+  setTodoList([...updatedList]);
+  }
+  const editHandler=(index)=>{
+    setTask(todoList[index]);
+    setEditIndex(index);
+  }
   return (
     <div>
-
-      <BrowserRouter>
-       <Header />
-        <Routes>
-          <Route path="/" element={<Home/>}></Route>
-          <Route path="/product" element={<Product products={products} />}></Route>
-          <Route path="/about" element={<About />}></Route>
-          <Route path="/cart" element={<Cart />}></Route>
-        </Routes>
-      </BrowserRouter>
-      <Footer />
+      <h1>ToDo List</h1>
+      <input
+      value={task} 
+      onChange={(e)=>setTask(e.target.value)}></input>
+      <button onClick={addHandler}>ADD</button>
+      <br></br>
+        {todoList.map((data,index)=>
+        <div key={index}>
+        <span>{data}</span>
+        <button onClick={()=>editHandler(index)}>Edit</button>
+        <button onClick={()=>deleteHandler(index)}>Delete</button>
+        </div>)}
     </div>
   )
 }
